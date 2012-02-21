@@ -4,14 +4,15 @@ module Analitica where
 import Data.Monoid 
 import Control.Monad 
 import Control.Monad.Instances 
+import Data.Ratio
 
-newtype Punto = Punto (Float,Float) deriving Show
+newtype Punto = Punto (Rational,Rational) deriving (Eq,Show)
 
 xpunto (Punto (x,y)) = x
 ypunto (Punto (x,y)) = y
 
 distanza :: Punto -> Punto -> Float
-distanza (Punto (x1,y1)) (Punto (x2,y2)) = sqrt $ (x2 - x1) ^ 2  + (y2 - y1) ^ 2
+distanza (Punto (x1,y1)) (Punto (x2,y2)) = sqrt $ fromRational (x2 - x1) ^ 2  + fromRational (y2 - y1) ^ 2
 
 instance Monoid Punto where
 	mappend = (^+)
@@ -24,8 +25,8 @@ segmenti :: [Punto] -> [Seg]
 segmenti = zip `ap` tail
 
 
-pendenza :: Punto -> Punto -> Float
-pendenza (Punto (x1,y1)) (Punto (x2,y2)) = (y2 - y1) * (x2 - x1)
+pendenza :: Punto -> Punto -> Punto
+pendenza (Punto (x1,y1)) (Punto (x2,y2)) = Punto (y2 - y1, x2 - x1)
 {-
 data Ordine = Orario | Antiorario | Allineati deriving Eq
 ord :: Punto -> Punto -> Punto -> Ordine
@@ -45,7 +46,7 @@ incrocia (p1,p2) (q1,q2) = ord p1 p2 q1 /= ord p1 p2 q2
 incrociano s1 s2 = incrocia s1 s2 && incrocia s2 s1
 
 -}
-type Param = Float
+type Param = Rational
 
 -- somma di 2 punti
 (^+) :: Punto -> Punto -> Punto
